@@ -7,8 +7,8 @@ interface IPayload{
     exp: number;
 }
 
-
 export const TokenValidation = (req: Request, res:Response, next:NextFunction) => {
+    console.log('verifying token');
     //Recollim token escrit al header
    const token = req.header('auth-token');
    //comprovem 
@@ -17,7 +17,7 @@ export const TokenValidation = (req: Request, res:Response, next:NextFunction) =
     //Obtenim de nou les dades codificades del token
     const payload = jwt.verify(token, process.env.SECRET || 'tokentest') as IPayload;
     //recollir dades del payload per mostrar el usuari
+    req.user = payload.username;
     return res.json(payload);
-
     next();
 }

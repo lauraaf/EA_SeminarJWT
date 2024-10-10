@@ -2,12 +2,21 @@ import { Request, Response } from "express";
 import { logUser, userInterface } from "../models/user";
 import * as userServices from "../services/userServices";
 
+interface IPayload{
+    username: string;
+    iat: number;
+    exp: number;
+}
+
 //Importem el middleware 
 //import {TokenValidation} from '../middleware/verifyToken'
 
 import jwt from 'jsonwebtoken'
 
-
+export async function profile(_req:Request, res: Response): Promise<Response> {
+    console.log('profile')
+    return res.json('hola');
+}
 export async function getUsers(_req: Request, res: Response): Promise<Response> {
    try {
     console.log("Get users");
@@ -25,6 +34,7 @@ export async function createUser(req: Request, res: Response): Promise<Response>
         const newUser: Partial<userInterface> = { username, name, email, password };
         console.log(newUser);
         const user = await userServices.getEntries.createUser(newUser);
+        user.password = await user.encryptPassword(user.password);
         console.log(user);
         //Retornem token al crear un usuari
         const token: string = jwt.sign({username: user.username}, process.env.SECRET || 'tokentest')
@@ -40,16 +50,24 @@ export async function login(req:Request, res: Response): Promise<Response> {
     //console.log(login);
     const loggedUser = await userServices.getEntries.findByUsername(login.username);
     //console.log(loggedUser);
-    console
     if(!loggedUser){
         return res.status(404).json({ error: 'User not found'})
     } 
     if(login.password == loggedUser.password){
         //Token
-        const token: string = jwt.sign({username: loggedUser.username}, process.env.SECRET || 'tokentest')
+        const token: string = jwt.sign({username: loggedUser.username}, process.env.SECRET || 'tokentest', {
+            expiresIn: 60 * 60 * 24
+        })
+        //proba per veure el contingut del payload
+            //Obtenim de nou les dades codificades del token
+            const payload = jwt.verify(token, process.env.SECRET || 'tokentest') as IPayload;
+            //recollir dades del payload per mostrar el usuari
+            req.user = payload.username;
+            //return res.json(payload);
         return res.json({
             message: "User logged in",
-            token
+            token,
+            payload
         });
     }
     return res.status(400).json({ error: 'Incorrect password'})
@@ -106,7 +124,3 @@ export async function deleteUser(req: Request, res: Response): Promise<Response>
 }
 
 
-
-export async function profile(_req:Request, res: Response){
-    return res.json('hola');
-}

@@ -3,7 +3,6 @@ import express from 'express';
 import { getUsers, createUser, getUser, updateUser, deleteUser, login, profile } from '../controllers/userController';
 import { TokenValidation } from '../middleware/verifyToken';
 
-
 const router = express.Router();
 
 // Ruta para obtener todos los usuarios
@@ -26,8 +25,6 @@ router.post("/login", login);
 
 //Ruta per veure el perfil amb token
 router.get("/profile", TokenValidation, profile);
-
-
 
 
 export default router 

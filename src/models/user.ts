@@ -1,10 +1,12 @@
 import { model, Schema } from "mongoose";
+import bcrypt from 'bcryptjs'
 
 export interface userInterface{
     username: string,
     name: string,
     email: string,
-    password: string
+    password: string,
+    encryptPassword(password: string): Promise<string>
 }
 
 export type UsersInterfacePublicInfo = Pick<userInterface, 'username' | 'name' >
@@ -18,5 +20,11 @@ export const userSchema = new Schema<userInterface>({
     password: { type: String, required: true }
     //experiences: [{ type: Schema.Types.ObjectId, ref: 'experiencias' }] // Vector de experiencias con referencia a su modelo
 })
+
+userSchema.methods.encryptPassword =  async (password:string): Promise<string> => {
+    const salt = await bcrypt.genSalt();
+    return bcrypt.hash(password, salt)
+};
+
 
 export const userofDB = model<userInterface>('user',userSchema)

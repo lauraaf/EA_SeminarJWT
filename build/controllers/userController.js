@@ -35,17 +35,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.profile = profile;
 exports.getUsers = getUsers;
 exports.createUser = createUser;
 exports.login = login;
 exports.getUser = getUser;
 exports.updateUser = updateUser;
 exports.deleteUser = deleteUser;
-exports.profile = profile;
 const userServices = __importStar(require("../services/userServices"));
 //Importem el middleware 
 //import {TokenValidation} from '../middleware/verifyToken'
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+function profile(_req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        console.log('profile');
+        return res.json('hola');
+    });
+}
 function getUsers(_req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -66,6 +72,7 @@ function createUser(req, res) {
             const newUser = { username, name, email, password };
             console.log(newUser);
             const user = yield userServices.getEntries.createUser(newUser);
+            user.password = yield user.encryptPassword(user.password);
             console.log(user);
             //Retornem token al crear un usuari
             const token = jsonwebtoken_1.default.sign({ username: user.username }, process.env.SECRET || 'tokentest');
@@ -83,16 +90,24 @@ function login(req, res) {
         //console.log(login);
         const loggedUser = yield userServices.getEntries.findByUsername(login.username);
         //console.log(loggedUser);
-        console;
         if (!loggedUser) {
             return res.status(404).json({ error: 'User not found' });
         }
         if (login.password == loggedUser.password) {
             //Token
-            const token = jsonwebtoken_1.default.sign({ username: loggedUser.username }, process.env.SECRET || 'tokentest');
+            const token = jsonwebtoken_1.default.sign({ username: loggedUser.username }, process.env.SECRET || 'tokentest', {
+                expiresIn: 60 * 60 * 24
+            });
+            //proba per veure el contingut del payload
+            //Obtenim de nou les dades codificades del token
+            const payload = jsonwebtoken_1.default.verify(token, process.env.SECRET || 'tokentest');
+            //recollir dades del payload per mostrar el usuari
+            req.user = payload.username;
+            //return res.json(payload);
             return res.json({
                 message: "User logged in",
-                token
+                token,
+                payload
             });
         }
         return res.status(400).json({ error: 'Incorrect password' });
@@ -149,10 +164,5 @@ function deleteUser(req, res) {
         catch (error) {
             return res.status(500).json({ error: 'Failed to get user' });
         }
-    });
-}
-function profile(_req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        return res.json('hola');
     });
 }
