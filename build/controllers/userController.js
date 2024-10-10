@@ -37,10 +37,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUsers = getUsers;
 exports.createUser = createUser;
+exports.login = login;
 exports.getUser = getUser;
 exports.updateUser = updateUser;
 exports.deleteUser = deleteUser;
-exports.login = login;
 exports.profile = profile;
 const userServices = __importStar(require("../services/userServices"));
 //Importem el middleware 
@@ -74,6 +74,28 @@ function createUser(req, res) {
         catch (error) {
             return res.status(500).json({ error: 'Failed to create user' });
         }
+    });
+}
+function login(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { username, password } = req.body;
+        const login = { username, password };
+        //console.log(login);
+        const loggedUser = yield userServices.getEntries.findByUsername(login.username);
+        //console.log(loggedUser);
+        console;
+        if (!loggedUser) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        if (login.password == loggedUser.password) {
+            //Token
+            const token = jsonwebtoken_1.default.sign({ username: loggedUser.username }, process.env.SECRET || 'tokentest');
+            return res.json({
+                message: "User logged in",
+                token
+            });
+        }
+        return res.status(400).json({ error: 'Incorrect password' });
     });
 }
 function getUser(req, res) {
@@ -127,26 +149,6 @@ function deleteUser(req, res) {
         catch (error) {
             return res.status(500).json({ error: 'Failed to get user' });
         }
-    });
-}
-function login(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const logUsername = req.params.username;
-        console.log(logUsername);
-        const user = yield userServices.getEntries.findByUsername(logUsername);
-        console.log(user);
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-        if (req.params.password == user.password) {
-            //Token
-            const token = jsonwebtoken_1.default.sign({ username: logUsername }, process.env.SECRET || 'tokentest');
-            return res.json({
-                message: "User logged in",
-                token
-            });
-        }
-        return res.status(400).json({ error: 'Incorrect password' });
     });
 }
 function profile(_req, res) {

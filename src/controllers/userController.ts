@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { userInterface } from "../models/user";
+import { logUser, userInterface } from "../models/user";
 import * as userServices from "../services/userServices";
 
 //Importem el middleware 
@@ -32,6 +32,27 @@ export async function createUser(req: Request, res: Response): Promise<Response>
     } catch (error) {
         return res.status(500).json({ error: 'Failed to create user' });
     }
+}
+
+export async function login(req:Request, res: Response): Promise<Response> {
+    const {username, password} =  req.body as logUser;
+    const login =  { username, password };
+    //console.log(login);
+    const loggedUser = await userServices.getEntries.findByUsername(login.username);
+    //console.log(loggedUser);
+    console
+    if(!loggedUser){
+        return res.status(404).json({ error: 'User not found'})
+    } 
+    if(login.password == loggedUser.password){
+        //Token
+        const token: string = jwt.sign({username: loggedUser.username}, process.env.SECRET || 'tokentest')
+        return res.json({
+            message: "User logged in",
+            token
+        });
+    }
+    return res.status(400).json({ error: 'Incorrect password'})
 }
 
 export async function getUser(req: Request, res: Response): Promise<Response> {
@@ -84,24 +105,7 @@ export async function deleteUser(req: Request, res: Response): Promise<Response>
     }
 }
 
-export async function login(req:Request, res: Response): Promise<Response> {
-    const logUsername =  req.params.username;
-    console.log(logUsername);
-    const user = await userServices.getEntries.findByUsername(logUsername);
-    console.log(user);
-    if(!user){
-        return res.status(404).json({ error: 'User not found'})
-    } 
-    if(req.params.password == user.password){
-        //Token
-        const token: string = jwt.sign({username: logUsername}, process.env.SECRET || 'tokentest')
-        return res.json({
-            message: "User logged in",
-            token
-        });
-    }
-    return res.status(400).json({ error: 'Incorrect password'})
-}
+
 
 export async function profile(_req:Request, res: Response){
     return res.json('hola');

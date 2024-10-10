@@ -9,6 +9,7 @@ export interface userInterface{
 
 export type UsersInterfacePublicInfo = Pick<userInterface, 'username' | 'name' >
 export type newUserInfo = Omit<userInterface,'id'>
+export type logUser = Pick<userInterface, 'username' | 'password'>
 
 export const userSchema = new Schema<userInterface>({
     username: { type: String, required: true },
