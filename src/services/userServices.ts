@@ -23,5 +23,10 @@ export const getEntries = {
     // Eliminar un usuario por ID
     deleteUserById: async(id:string)=>{
         return await userofDB.findByIdAndDelete(id);
+    },
+    // Buscar usuari per username
+    findByUsername: async(username:string) => {
+        console.log(username);
+        return await userofDB.findOne({username: username});
     }
 }

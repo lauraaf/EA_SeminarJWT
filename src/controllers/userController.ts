@@ -79,3 +79,22 @@ export async function deleteUser(req: Request, res: Response): Promise<Response>
         return res.status(500).json({ error: 'Failed to get user' });
     }
 }
+
+export async function login(req:Request, res: Response): Promise<Response> {
+    const logUsername =  req.params.username;
+    console.log(logUsername);
+    const user = await userServices.getEntries.findByUsername(logUsername);
+    console.log(user);
+    if(!user){
+        return res.status(404).json({ error: 'User not found'})
+    } 
+    if(req.params.password == user.password){
+        //Token
+        const token: string = jwt.sign({username: logUsername}, process.env.SECRET || 'tokentest')
+        return res.json({
+            message: "User logged in",
+            token
+        });
+    }
+    return res.status(400).json({ error: 'Incorrect password'})
+}

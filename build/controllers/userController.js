@@ -31,13 +31,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUsers = getUsers;
 exports.createUser = createUser;
 exports.getUser = getUser;
 exports.updateUser = updateUser;
 exports.deleteUser = deleteUser;
+exports.login = login;
 const userServices = __importStar(require("../services/userServices"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 function getUsers(_req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -58,10 +63,9 @@ function createUser(req, res) {
             const newUser = { username, name, email, password };
             const user = yield userServices.getEntries.createUser(newUser);
             console.log(user);
-            return res.json({
-                message: "User created",
-                user
-            });
+            //Retornem token al crear un usuari
+            const token = jsonwebtoken_1.default.sign({ username: user.username }, process.env.SECRET || 'tokentest');
+            return res.header('auth-token', token).json(user);
         }
         catch (error) {
             return res.status(500).json({ error: 'Failed to create user' });
@@ -119,5 +123,25 @@ function deleteUser(req, res) {
         catch (error) {
             return res.status(500).json({ error: 'Failed to get user' });
         }
+    });
+}
+function login(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const logUsername = req.params.username;
+        console.log(logUsername);
+        const user = yield userServices.getEntries.findByUsername(logUsername);
+        console.log(user);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        if (req.params.password == user.password) {
+            //Token
+            const token = jsonwebtoken_1.default.sign({ username: logUsername }, process.env.SECRET || 'tokentest');
+            return res.json({
+                message: "User logged in",
+                token
+            });
+        }
+        return res.status(400).json({ error: 'Incorrect password' });
     });
 }
