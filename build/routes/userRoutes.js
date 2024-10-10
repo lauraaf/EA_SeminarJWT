@@ -21,5 +21,5 @@ router.delete("/:id", userController_1.deleteUser);
 //Ruta per fer login
 router.post("/login", userController_1.login);
 //Ruta per veure el perfil amb token
-router.get("/profile", verifyToken_1.TokenValidation, userController_1.profile);
+router.get("/:id/profile", verifyToken_1.TokenValidation, userController_1.profile);
 exports.default = router;
