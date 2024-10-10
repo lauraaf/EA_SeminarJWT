@@ -12,7 +12,7 @@ export const getEntries = {
     },
     // Crear un nuevo usuario
     createUser: async(entry:object)=>{
-        console.log('hi');
+        console.log(entry);
         return await userofDB.create(entry);
     },
     // Actualizar un usuario por ID

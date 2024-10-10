@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import { userInterface } from "../models/user";
 import * as userServices from "../services/userServices";
 
+//Importem el middleware 
+//import {TokenValidation} from '../middleware/verifyToken'
+
 import jwt from 'jsonwebtoken'
 
 
@@ -20,6 +23,7 @@ export async function createUser(req: Request, res: Response): Promise<Response>
         const { username, name, email, password } = req.body as userInterface;
         console.log('creating user');
         const newUser: Partial<userInterface> = { username, name, email, password };
+        console.log(newUser);
         const user = await userServices.getEntries.createUser(newUser);
         console.log(user);
         //Retornem token al crear un usuari
@@ -97,4 +101,8 @@ export async function login(req:Request, res: Response): Promise<Response> {
         });
     }
     return res.status(400).json({ error: 'Incorrect password'})
+}
+
+export async function profile(_req:Request, res: Response){
+    return res.json('hola');
 }

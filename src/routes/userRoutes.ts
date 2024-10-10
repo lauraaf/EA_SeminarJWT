@@ -22,7 +22,7 @@ router.put("/:id", updateUser);
 router.delete("/:id", deleteUser);
 
 //Ruta per fer login
-router.post("/login", login );
+router.post("/login", login);
 
 //Ruta per veure el perfil amb token
 router.get("/profile", TokenValidation, profile);

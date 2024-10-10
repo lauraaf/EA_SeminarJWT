@@ -41,7 +41,10 @@ exports.getUser = getUser;
 exports.updateUser = updateUser;
 exports.deleteUser = deleteUser;
 exports.login = login;
+exports.profile = profile;
 const userServices = __importStar(require("../services/userServices"));
+//Importem el middleware 
+//import {TokenValidation} from '../middleware/verifyToken'
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 function getUsers(_req, res) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -61,6 +64,7 @@ function createUser(req, res) {
             const { username, name, email, password } = req.body;
             console.log('creating user');
             const newUser = { username, name, email, password };
+            console.log(newUser);
             const user = yield userServices.getEntries.createUser(newUser);
             console.log(user);
             //Retornem token al crear un usuari
@@ -143,5 +147,10 @@ function login(req, res) {
             });
         }
         return res.status(400).json({ error: 'Incorrect password' });
+    });
+}
+function profile(_req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return res.json('hola');
     });
 }

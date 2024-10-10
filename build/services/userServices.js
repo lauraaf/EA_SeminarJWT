@@ -22,7 +22,7 @@ exports.getEntries = {
     }),
     // Crear un nuevo usuario
     createUser: (entry) => __awaiter(void 0, void 0, void 0, function* () {
-        console.log('hi');
+        console.log(entry);
         return yield user_1.userofDB.create(entry);
     }),
     // Actualizar un usuario por ID
