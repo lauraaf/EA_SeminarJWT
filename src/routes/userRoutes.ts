@@ -23,6 +23,9 @@ router.delete("/:id", deleteUser);
 //Ruta per fer login
 router.post("/login", login);
 
+//Ruta per eliminar user per id
+router.delete('/delete/:idUser/:ideliminado', TokenValidation, deleteUser);
+
 //Ruta per veure el perfil amb token
 router.get("/:id/profile", TokenValidation, profile);
 

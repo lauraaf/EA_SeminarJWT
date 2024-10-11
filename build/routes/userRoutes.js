@@ -20,6 +20,8 @@ router.put("/:id", userController_1.updateUser);
 router.delete("/:id", userController_1.deleteUser);
 //Ruta per fer login
 router.post("/login", userController_1.login);
+//Ruta per eliminar user per id
+router.delete('/delete/:idUser/:ideliminado', verifyToken_1.TokenValidation, userController_1.deleteUser);
 //Ruta per veure el perfil amb token
 router.get("/:id/profile", verifyToken_1.TokenValidation, userController_1.profile);
 exports.default = router;

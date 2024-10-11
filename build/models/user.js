@@ -19,7 +19,8 @@ exports.userSchema = new mongoose_1.Schema({
     username: { type: String, required: true },
     name: { type: String, required: true },
     email: { type: String, required: true },
-    password: { type: String, required: true }
+    password: { type: String, required: true },
+    isAdmin: { type: Boolean, default: false }
     //experiences: [{ type: Schema.Types.ObjectId, ref: 'experiencias' }] // Vector de experiencias con referencia a su modelo
 });
 exports.userSchema.methods.encryptPassword = (password) => __awaiter(void 0, void 0, void 0, function* () {
