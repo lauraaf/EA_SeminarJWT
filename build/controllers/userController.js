@@ -92,6 +92,7 @@ function login(req, res) {
             const token = jsonwebtoken_1.default.sign({ username: username, isAdmin: loggedUser.isAdmin }, process.env.SECRET || 'tokentest', {
                 expiresIn: 60 * 60 * 24
             });
+            loggedUser.password = yield loggedUser.encryptPassword(loggedUser.password);
             return res.json({
                 message: "User logged in",
                 token
@@ -109,6 +110,7 @@ function getUser(req, res) {
             if (!user) {
                 return res.status(404).json({ error: `User with id ${id} not found` });
             }
+            user.password = yield user.encryptPassword(user.password);
             return res.json(user);
         }
         catch (error) {
@@ -127,6 +129,7 @@ function updateUser(req, res) {
             if (!user) {
                 return res.status(404).json({ error: `User with id ${id} not found` });
             }
+            user.password = yield user.encryptPassword(user.password);
             return res.json({
                 message: "User updated",
                 user
@@ -147,6 +150,7 @@ function deleteUser(req, res) {
             if (!user) {
                 return res.status(404).json({ error: `User with id ${id} not found` });
             }
+            user.password = yield user.encryptPassword(user.password);
             return res.json(user);
         }
         catch (error) {
@@ -165,6 +169,7 @@ function profile(req, res) {
             if (!user) {
                 return res.status(404).json({ error: `User with id ${id} not found` });
             }
+            user.password = yield user.encryptPassword(user.password);
             // Devuelve los datos del usuario
             return res.json(user);
         }

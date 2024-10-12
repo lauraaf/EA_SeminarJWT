@@ -4,7 +4,7 @@
 
 - login: et loggeja i et retorna un token (funciona)
 
-- profile: de moment torna el payload del token, falta acabar
+- profile: si li dones el teu id d'usuaari + token i comprova que ets propietari del token o ets administrador et permet accedir a les dades
 
 - funcio crear usuari amb funcionalitat encrypted password
 

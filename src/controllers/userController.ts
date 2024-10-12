@@ -50,7 +50,7 @@ export async function login(req:Request, res: Response): Promise<Response> {
         const token: string = jwt.sign({ username: username, isAdmin : loggedUser.isAdmin }, process.env.SECRET || 'tokentest', {
             expiresIn: 60 * 60 * 24
         })
-        
+        loggedUser.password = await loggedUser.encryptPassword(loggedUser.password);
         return res.json({
             message: "User logged in",
             token
@@ -68,6 +68,7 @@ export async function getUser(req: Request, res: Response): Promise<Response> {
         if(!user) {
             return res.status(404).json({ error: `User with id ${id} not found` });
         }
+        user.password = await user.encryptPassword(user.password);
         return res.json(user);
     } catch (error) {
         return res.status(500).json({ error: 'Failed to get user' });
@@ -85,6 +86,7 @@ export async function updateUser(req: Request, res: Response): Promise<Response>
         if(!user) {
             return res.status(404).json({ error: `User with id ${id} not found` });
         }
+        user.password = await user.encryptPassword(user.password);
         return res.json({
             message: "User updated",
             user
@@ -104,7 +106,7 @@ export async function deleteUser(req: Request, res: Response): Promise<Response>
         if (!user){
             return res.status(404).json({ error: `User with id ${id} not found` });
         }
-
+        user.password = await user.encryptPassword(user.password);
         return res.json(user);
     } catch (error) {
         return res.status(500).json({ error: 'Failed to get user' });
@@ -122,7 +124,7 @@ export async function profile(req: Request, res: Response): Promise<Response> {
         if (!user) {
             return res.status(404).json({ error: `User with id ${id} not found` });
         }
-
+        user.password = await user.encryptPassword(user.password);
         // Devuelve los datos del usuario
         return res.json(user);
     } catch (error) {
